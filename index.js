@@ -25,7 +25,7 @@ app.get("/deezer", async (req, res) => {
   }
 });
 
-// Nueva ruta para proxy de imágenes
+// Nueva ruta para proxy de imágenes con header CORS explícito
 app.get("/image-proxy", async (req, res) => {
   const { url } = req.query;
 
@@ -41,6 +41,7 @@ app.get("/image-proxy", async (req, res) => {
     const contentType = response.headers["content-type"] || "image/jpeg";
 
     res.set("Content-Type", contentType);
+    res.set("Access-Control-Allow-Origin", "*");  // <-- Header para evitar error CORS canvas tainted
     res.send(Buffer.from(response.data, "binary"));
   } catch (error) {
     console.error("Error al cargar la imagen:", error.message);
