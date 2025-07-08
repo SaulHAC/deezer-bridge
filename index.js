@@ -1,14 +1,13 @@
 const express = require("express");
 const axios = require("axios");
-const cors = require("cors");
+const cors = require("cors"); // ← si lo necesitas
 
 const app = express();
 const PORT = 3000;
 
-app.use(cors());
+app.use(cors()); // ← habilita CORS
 app.use(express.json());
 
-// Ruta existente para Deezer API
 app.get("/deezer", async (req, res) => {
   const { endpoint } = req.query;
 
@@ -22,30 +21,6 @@ app.get("/deezer", async (req, res) => {
   } catch (error) {
     console.error("Error:", error.message);
     res.status(500).json({ error: "Fallo al consultar la API de Deezer" });
-  }
-});
-
-// Nueva ruta para proxy de imágenes con header CORS explícito
-app.get("/image-proxy", async (req, res) => {
-  const { url } = req.query;
-
-  if (!url) {
-    return res.status(400).json({ error: "Parámetro 'url' requerido" });
-  }
-
-  try {
-    const response = await axios.get(url, {
-      responseType: "arraybuffer",
-    });
-
-    const contentType = response.headers["content-type"] || "image/jpeg";
-
-    res.set("Content-Type", contentType);
-    res.set("Access-Control-Allow-Origin", "*");  // <-- Header para evitar error CORS canvas tainted
-    res.send(Buffer.from(response.data, "binary"));
-  } catch (error) {
-    console.error("Error al cargar la imagen:", error.message);
-    res.status(500).json({ error: "No se pudo cargar la imagen" });
   }
 });
 
